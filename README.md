@@ -1,17 +1,16 @@
 ## Purpose
 
-This project is designed to build a Tanzu Application Platform 1.4.x multicluster instances on AWS EKS that corresponds to the [Tanzu Application Platform Reference Design](https://github.com/vmware-tanzu-labs/tanzu-validated-solutions/blob/main/src/reference-designs/tap-architecture-planning.md) . 
+This project is designed to build a Tanzu Application Platform 1.4.x single-cluster instance on AWS EKS that corresponds to the [Full TAP profile in the Official VMware Docs](https://docs.vmware.com/en/VMware-Tanzu-Application-Platform/1.4/tap/install-intro.html). 
 
-This is 2 steps automation with minimum inputs into config files. 
+This is a 2-step automation with minimum inputs into config files. This scripts assume that Tanzu Cluster essentials are already present in the TKG cluster.
 
-* **Step 1** to create all aws resources for tap like VPC , 4 eks clusters and associated security and Iam group , node etc
-* **Step 2** Install AWS CSI driver in all eks clusters.
-* **Step 3** to install tap profiles into eks clusters.
+* **Step 1** To create all aws resources for tap like VPC, 1 eks cluster and associated security and Iam group, node etc.
+* **Step 2** To install TAP full profile into a Tanzu K8S cluster.
 
 Specifically, this automation will build:
-- a aws VPC (internet facing)
-- 4 EKS clusters named as tap-view , tap-run , tap-build,tap-iterate and associated security IAM roles and groups and nodes into aws. 
-- Install Tanzu Application Platform profiles such as view,run,build,iterate on Respective eks clusters. 
+- A aws VPC (internet facing)
+- 1 EKS cluster named as tap-full and associated security IAM roles and groups and nodes into AWS.
+- Install Tanzu Application Platform full profile on the AWS EKS cluster. 
 - Install Tanzu Application Platform sample demo app. 
 
 ## AWS resources matrix 
@@ -21,14 +20,13 @@ Specifically, this automation will build:
  VPC | 1
  Subnets | 2 private , 2 public
  VPC cidr | 10.0.0.0/16
- EKS clusters | 4
- Nodes per eks cluster | Nodes : 3, Node Size : t2.xlarge , Storage : 100GB disk size
+ EKS clusters | 1
+ Nodes per eks cluster | Nodes : 4, Node Size : t2.xlarge , Storage : 100GB disk size
 ## Prerequisite 
 
 Following cli must be setup into jumbbox or execution machine/terminal. 
    * terraform cli 
    * aws cli 
-
 
 ## Prepare the Environment
 
@@ -76,20 +74,17 @@ registry_url=<Provide user registry url>
 registry_user=<Provide user registry userid>
 registry_password=<Provide user registry password>
 aws_region=<aws region where tap eks clusters created>
-tap_run_domain=<run cluster sub domain example like : run.ab-tap.customer0.io >
-tap_view_domain=<view cluster sub domain example like : view.ab-tap.customer0.io >
-tap_iterate_domain=<iterate cluster sub domain example like : iterate.ab-tap.customer0.io >
+tap_full_domain=<full cluster sub domain example like : full.ab-tap.customer0.io >
 tap_git_catalog_url=<git catelog url example like : https://github.com/sendjainabhi/tap/blob/main/catalog-info.yaml>
-TAP_RUN_CLUSTER_NAME="tap-run"
-TAP_BUILD_CLUSTER_NAME="tap-build"
-TAP_VIEW_CLUSTER_NAME="tap-view"
-TAP_ITERATE_CLUSTER_NAME="tap-iterate"
-GITHUB_AUTH_CLIENT_ID=<GitHub App Client ID for GitHub Auh provider configuration for tap-gui>
-GITHUB_AUTH_CLIENT_SECRET=<GitHub App Client Secret for GitHub Auh provider configuration for tap-gui>
+TAP_FULL_CLUSTER_NAME="tap-full"
+GITHUB_AUTH_CLIENT_ID=<client ID belonging to the GitHub App to set up the GitHub authorization provider>
+GITHUB_AUTH_CLIENT_SECRET=<client Secret belonging to the GitHub App to set up the GitHub authorization provider>
+tap_gui_docs_bucket=<S3 bucket hosting the docs>
 
 #tap demo app properties
 TAP_APP_NAME="spring-music"
 TAP_APP_GIT_URL="https://github.com/PeterEltgroth/spring-music"
+
 ```
 
 ## Install TAP
@@ -100,9 +95,9 @@ Execute following steps to build aws resources for TAP.
 
 * Execute `terraform apply` to build aws resources.
 
-### Install TAP multi clusters (Run/View/Build/Iterate)
+### Install TAP single cluster (Full)
 
-Execute following steps to Install TAP multi clusters (Run/View/Build/Iterate)
+Execute following steps to Install TAP single cluster (Full)
 ```
 
 #Step 1 - Execute Permission to tap-index.sh file
@@ -115,70 +110,8 @@ chmod +x /tap-scripts/tap-index.sh
 ```
 **Note** - 
 
- Pick an external ip from service output from eks view and run clusters and configure DNS wildcard records in your dns server for view and run cluster
- * **Example view cluster** - *.view.customer0.io ==> <ingress external ip/cname>
- * **Example run cluster** - *.run.customer0.io ==> <ingress external ip/cname>
-  * **Example iterate cluster** - *.iter.customer0.io ==> <ingress external ip/cname>
-### TAP single profile(Run/View/Build/Iterate) installation 
-
-You can install only any single TAP profile(Run/View/Build/Iterate) as well 
-
-* **To install View profile only , execute following step** 
-
-```
-
-#Step 1 - Execute Permission to tap-view.sh file
-chmod +x /tap-scripts/tap-view.sh
-
-#Step 2 - Execute tap-view.sh file 
-./tap-scripts/tap-view.sh
-
-
-```
-
-* **To install Run profile only , execute following step** 
-
-```
-
-#Step 1 - Execute Permission to tap-run.sh file
-chmod +x /tap-scripts/tap-run.sh
-
-#Step 2 - Execute tap-run.sh file 
-./tap-scripts/tap-run.sh
-
-
-```
-
-> **NOTE:** This TAP Version (1.3.0) has a bug in the policy-controller package that prevents it to start successfully and reconcile. It has been excluded in the configuration. Namespaces manually labeled to undergo signature verification will not be able to verify the signature of an image before it is let into the cluster
-
-* **To install build profile only , execute following step** 
-
-```
-
-#Step 1 - Execute Permission to tap-build.sh file
-chmod +x /tap-scripts/tap-build.sh
-
-#Step 2 - Execute tap-build.sh file 
-./tap-scripts/tap-build.sh
-
-
-```
-
-
-* **To install iterate profile only , execute following step** 
-
-```
-
-#Step 1 - Execute Permission to tap-iterate.sh file
-chmod +x /tap-scripts/tap-iterate.sh
-
-#Step 2 - Execute tap-iterate.sh file 
-./tap-scripts/tap-iterate.sh
-
-
-```
-
-> **NOTE:** This TAP Version (1.3.0) has a bug in the policy-controller package that prevents it to start successfully and reconcile. It has been excluded in the configuration. Namespaces manually labeled to undergo signature verification will not be able to verify the signature of an image before it is let into the cluster
+ Pick an external ip from service output from eks full cluster and configure DNS wildcard record in your DNS server for the full cluster
+ * **Example full cluster** - *.full.customer0.io ==> <ingress external ip/cname>
 
 ### TAP scripts for specific tasks
 
@@ -190,11 +123,7 @@ If you got stuck in any specific stage and need to resume installation , you can
 
 * **Setup TAP repository** - execute `./tap-scripts/tanzu-repo.sh`  
 
-* **Install TAP run profile packages** - execute `./tap-scripts/tanzu-run-profile.sh`  
-
-* **Install TAP build profile packages** - execute `./tap-scripts/tanzu-build-profile.sh`
-
-* **Install TAP view profile packages** - execute `./tap-scripts/tanzu-view-profile.sh`
+* **Install TAP full profile packages** - execute `./tap-scripts/tanzu-full-profile.sh`  
 
 ## Clean up
 
@@ -203,32 +132,17 @@ If you got stuck in any specific stage and need to resume installation , you can
 Please follow below steps 
 ```
 
-1. execute chmod +x /tap-scripts/tap-delete/tap-delete.sh
-2. execute ./tap-scripts/tap-delete/tap-delete.sh
- 
 # Delete single tap cluster instance 
-1. Login to eks clusters(view/run/build/iterate) using kubeconfig where you want to delete tap.
+1. Login to eks cluster(full) using kubeconfig where you want to delete tap.
 2. execute chmod +x /tap-scripts/tap-delete/tap-delete-single-cluster.sh
 3. execute ./tap-scripts/tap-delete/tap-delete-single-cluster.sh
 
 ```
-### Delete EKS clusters instances from eks cluster 
+### Delete EKS cluster instance from eks cluster 
 Run `terraform destroy` to destroy to delete all aws resources created by terraform. In some instances it is possible that `terraform destroy` will not be able to clean up after a failed Tanzu install. Especially in situations where the management cluster only comes partially up for whatever reason. In this circumstance you can recursively delete the VPCs that failed to get destroyed and use the tags "CreatedBy: Arcas" to find anything that was generated by this terraform.
 
 ### Troubleshooting 
  * if `terraform destroy` command not able to delete aws vpc resources then you can manually delete aws load balancer created by tap under tap vpc and run `terraform destroy` command again. 
 
 ### Known issues 
-* View cluster `tap-gui` UI is not able to fetch apps run time resources due to timed out issue , due to cluster communications timed out error.  
-
-Error log 
-```
-Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36\""}
-{"ts":"2022-11-15T20:46:45.905Z","level":"info","meta":{"type":"incomingRequest","service":"backstage"},"msg":"::ffff:10.0.3.196 - - [15/Nov/2022:20:46:45 +0000] \"POST /api/kubernetes/services/spring-music HTTP/1.1\" - - \"-\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36\""}
-{"ts":"2022-11-15T20:47:15.189Z","level":"error","meta":{"type":"plugin","plugin":"kubernetes","service":"backstage"},"err":"action=retrieveObjectsByServiceId service=spring-music, error=Error: connect ETIMEDOUT 10.0.1.73:443"}
-```
-
-### 
-
-
  
