@@ -34,8 +34,8 @@ if [ "$os" == "$var" ]; then
 #file name - mac= tanzu-framework-darwin-amd64.tar , linux= tanzu-framework-linux-amd64.tar
 
             
-tanzucliurl=https://network.tanzu.vmware.com/api/v2/products/tanzu-application-platform/releases/1283644/product_files/1457671/download
-tanzuclifilename=tanzu-framework-darwin-amd64.tar
+tanzucliurl=https://network.tanzu.vmware.com/api/v2/products/tanzu-application-platform/releases/1294004/product_files/1478735/download
+tanzuclifilename=tanzu-framework-darwin-amd64-v0.25.4.7.tar
 
 mkdir $HOME/tanzu
 cd $HOME/tanzu
@@ -64,8 +64,8 @@ else
 
 
 #file name - mac= tanzu-framework-darwin-amd64.tar , linux= tanzu-framework-linux-amd64.tar
-tanzucliurl=https://network.tanzu.vmware.com/api/v2/products/tanzu-application-platform/releases/1283644/product_files/1457672/download
-tanzuclifilename=tanzu-framework-linux-amd64.tar
+tanzucliurl=https://network.tanzu.vmware.com/api/v2/products/tanzu-application-platform/releases/1294004/product_files/1478736/download
+tanzuclifilename=tanzu-framework-linux-amd64-v0.25.4.7.tar
 
 
 mkdir $HOME/tanzu
@@ -74,7 +74,7 @@ wget $tanzucliurl --header="Authorization: Bearer ${access_token}" -O $HOME/tanz
 tar -xvf $HOME/tanzu/$tanzuclifilename -C $HOME/tanzu
 
 export VERSION=v0.25.4
- install $HOME/tanzu/cli/core/$VERSION/tanzu-core-linux_amd64 /usr/local/bin/tanzu
+ sudo install $HOME/tanzu/cli/core/$VERSION/tanzu-core-linux_amd64 /usr/local/bin/tanzu
 
 # install yq package 
  wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
