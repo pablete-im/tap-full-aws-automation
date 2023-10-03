@@ -14,9 +14,5 @@ echo "Step 1 => installing tanzu cli !!!"
 ./tanzu-cli-setup.sh
 echo "Step 2 => Setup TAP Full Cluster"
 ./tap-full.sh
-
-echo "pick an external ip from service output and configure DNS wildcard records in your dns server for full cluster"
-echo "example full cluster - *.full.customer0.io ==> <ingress external ip/cname>"
-
-echo "Step 5 => Deploy sample app"
+echo "Step 3 => Deploy sample app"
 ./tap-demo-app-deploy.sh

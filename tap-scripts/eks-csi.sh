@@ -2,7 +2,7 @@
 # set -e
 
 usage(){
-  echo "Usage: eks-csi-setup.sh "
+  echo "Usage: eks-csi.sh "
   echo ""
   echo "Pre-requisites:"
   echo "  A EKS clsuter"
@@ -17,8 +17,8 @@ usage(){
   echo "    Providing here will override the var.conf value"
   echo ""
   echo "Examples:"
-  echo "eks-csi-setup.sh -c tap-view"
-  echo "eks-csi-setup.sh -c tap-view --remove"
+  echo "eks-csi.sh -c tap-view"
+  echo "eks-csi.sh -c tap-view --remove"
   echo ""
 }
 

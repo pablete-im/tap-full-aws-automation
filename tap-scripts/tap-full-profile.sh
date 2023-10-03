@@ -3,11 +3,12 @@
 # SPDX-License-Identifier: BSD-2-Clause
 source var.conf
 
-echo  "Login to Full Cluster !!! "
+#echo  "Login to Full Cluster !!! "
 #login to kubernets eks full cluster
-aws eks --region $aws_region update-kubeconfig --name ${TAP_FULL_CLUSTER_NAME}
+#aws eks --region $aws_region update-kubeconfig --name ${TAP_FULL_CLUSTER_NAME}
 
 # set the following variables
+#export TAP_NAMESPACE="tap-install"
 export TAP_REGISTRY_USER=$registry_user
 export TAP_REGISTRY_SERVER_ORIGINAL=$registry_url
 if [ $registry_url = "${DOCKERHUB_REGISTRY_URL}" ]
@@ -18,8 +19,6 @@ else
   export TAP_REGISTRY_SERVER=$registry_url
   export TAP_REGISTRY_REPOSITORY="supply-chain"
 fi
-export TAP_REGISTRY_PASSWORD=$registry_password
-#export TAP_VERSION=1.1.0
 export INSTALL_REGISTRY_USERNAME=$tanzu_net_reg_user
 export INSTALL_REGISTRY_PASSWORD=$tanzu_net_reg_password
 
@@ -77,17 +76,21 @@ CLUSTER_TOKEN_FULL=$(kubectl get secret -n metadata-store metadata-store-read-wr
 
 cat <<EOF | tee tap-values-full.yaml
 profile: full
+
+shared:
+  ingress_domain: "${tap_full_domain}" 
+
 ceip_policy_disclosed: true
 
 excluded_packages:
   - policy.apps.tanzu.vmware.com
-shared:
-  ingress_domain: "${tap_full_domain}" 
+
 contour:
   infrastructure_provider: aws
   envoy:
     service:
       type: LoadBalancer
+
 cnrs:
   domain_name: "${tap_full_domain}"
 
@@ -103,12 +106,9 @@ ootb_supply_chain_testing_scanning:
 
 buildservice:
   kp_default_repository: "${TAP_REGISTRY_SERVER}/build-service"
-  kp_default_repository_username: "${TAP_REGISTRY_USER}"
-  kp_default_repository_password: "${TAP_REGISTRY_PASSWORD}"
-  tanzunet_username: "${INSTALL_REGISTRY_USERNAME}"
-  tanzunet_password: "${INSTALL_REGISTRY_PASSWORD}"
-  descriptor_name: "full"
-  enable_automatic_dependency_updates: true
+  kp_default_repository_secret:
+    name: registry-credentials
+    namespace: "${TAP_NAMESPACE}"
 
 grype:
   namespace: "default" 
@@ -161,7 +161,7 @@ metadata_store:
 
 appliveview:
   ingressEnabled: "true"
-  sslDisabled: "true"
+  sslDeactivated: "true"
 
 EOF
 
@@ -173,5 +173,5 @@ tanzu package installed list -A
 
 kubectl get svc -n tanzu-system-ingress
 
-# pick an external ip from service output and configure DNS wildcard records
-# example - *.ui.customer0.io ==> <ingress external ip/cname>
+echo "pick external ip from service output  and configure DNS wild card(*) into your DNS server like aws route 53 etc"
+echo "example - *.iter.customer0.io ==> <ingress external ip/cname>"

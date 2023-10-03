@@ -15,8 +15,6 @@ access_token=$(echo ${token} | jq -r .access_token)
 
 curl -i -H "Accept: application/json" -H "Content-Type: application/json" -H "Authorization: Bearer ${access_token}" -X GET https://network.pivotal.io/api/v2/authentication
 
-
-
 echo "Enter your terminal OS as (l or m)- l as linux , m as mac in var config file"
 
 var="m"
@@ -33,18 +31,10 @@ if [ "$os" == "$var" ]; then
 
 #file name - mac= tanzu-framework-darwin-amd64.tar , linux= tanzu-framework-linux-amd64.tar
 
-            
-tanzucliurl=https://network.tanzu.vmware.com/api/v2/products/tanzu-application-platform/releases/1294004/product_files/1478735/download
-tanzuclifilename=tanzu-framework-darwin-amd64-v0.25.4.7.tar
 
-mkdir $HOME/tanzu
-cd $HOME/tanzu
-wget $tanzucliurl --header="Authorization: Bearer ${access_token}" -O $HOME/tanzu/$tanzuclifilename
-tar -xvf $HOME/tanzu/$tanzuclifilename -C $HOME/tanzu
 
-export VERSION=v0.25.4
-install $HOME/tanzu/cli/core/$VERSION/tanzu-core-darwin_amd64 /usr/local/bin/tanzu
-
+brew update
+brew install vmware-tanzu/tanzu/tanzu-cli
 
 # install yq package 
  wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_darwin_amd64
@@ -55,26 +45,13 @@ else
     echo "OS = Linux/ubuntu"
 
 # install tanzu cli v(0.25.4) and plug-ins (linux)
-
-# install tanzu cli v(0.25.4) and plug-ins (mac)
-#url linux-  tanzu cli -  https://network.tanzu.vmware.com/api/v2/products/tanzu-application-platform/releases/1239018/product_files/1404618/download
-
-#url mac- tanzu cli - https://network.tanzu.vmware.com/api/v2/products/tanzu-application-platform/releases/1239018/product_files/1404617/download
-
-
-
-#file name - mac= tanzu-framework-darwin-amd64.tar , linux= tanzu-framework-linux-amd64.tar
-tanzucliurl=https://network.tanzu.vmware.com/api/v2/products/tanzu-application-platform/releases/1294004/product_files/1478736/download
-tanzuclifilename=tanzu-framework-linux-amd64-v0.25.4.7.tar
-
-
-mkdir $HOME/tanzu
-cd $HOME/tanzu
-wget $tanzucliurl --header="Authorization: Bearer ${access_token}" -O $HOME/tanzu/$tanzuclifilename
-tar -xvf $HOME/tanzu/$tanzuclifilename -C $HOME/tanzu
-
-export VERSION=v0.25.4
- sudo install $HOME/tanzu/cli/core/$VERSION/tanzu-core-linux_amd64 /usr/local/bin/tanzu
+sudo mkdir -p /etc/apt/keyrings/
+sudo apt-get update
+sudo apt-get install -y ca-certificates curl gpg
+curl -fsSL https://packages.vmware.com/tools/keys/VMWARE-PACKAGING-GPG-RSA-KEY.pub | sudo gpg --dearmor -o /etc/apt/keyrings/tanzu-archive-keyring.gpg
+echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/tanzu-archive-keyring.gpg] https://storage.googleapis.com/tanzu-cli-os-packages/apt tanzu-cli-jessie main" | sudo tee /etc/apt/sources.list.d/tanzu.list
+sudo apt-get update
+sudo apt-get install -y tanzu-cli
 
 # install yq package 
  wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
@@ -83,13 +60,13 @@ yq --version
 
 fi
 
-export TANZU_CLI_NO_INIT=true
+
 #tanzu init
 tanzu version
 
 # tanzu plug-ins
 #tanzu plugin clean
-tanzu plugin install --local cli all
+tanzu plugin install --group vmware-tap/default:v1.6.1
 #tanzu plugin sync
 tanzu plugin list
 

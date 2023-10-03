@@ -1,7 +1,7 @@
 variable "aws_region" {
   description = "The aws region. https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html"
   type        = string
-  default     = "us-east-1"
+  default     = "eu-west-1"
 }
 
 variable "availability_zones_count" {
@@ -25,13 +25,13 @@ variable "vpc_cidr" {
 variable "subnet_cidr_bits" {
   description = "The number of subnet bits for the CIDR."
   type        = number
-  default     = 8
+  default     = 4
 }
 
 variable "k8_version" {
   description = "Kubernetes installed version "
   type        = string
-  default     = "1.23"
+  default     = "1.26"
 }
 
 variable "tags" {

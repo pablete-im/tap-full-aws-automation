@@ -1,6 +1,6 @@
 ## Purpose
 
-This project is designed to build a Tanzu Application Platform 1.4.x single-cluster instance on AWS EKS that corresponds to the [Full TAP profile in the Official VMware Docs](https://docs.vmware.com/en/VMware-Tanzu-Application-Platform/1.4/tap/install-intro.html). 
+This project is designed to build a Tanzu Application Platform 1.6.x single-cluster instance on AWS EKS that corresponds to the [Full TAP profile in the Official VMware Docs](https://docs.vmware.com/en/VMware-Tanzu-Application-Platform/1.6/tap/install-intro.html). 
 
 This is a 2-step automation with minimum inputs into config files. This scripts assume that Tanzu Cluster essentials are already present in the TKG cluster.
 
@@ -55,16 +55,19 @@ export AWS_REGION=us-east-1  # ensure the region is set correctly. this must agr
 
 Add following details into `/tap-scripts/var.conf` file to fullfill tap prerequisite. Examples and default values given in below sample. All fields are mandatory and can't be leave blank and must be filled before executing the `tap-index.sh` . Please refer below sample config file. 
 ```
-
 TAP_DEV_NAMESPACE="default"
 os=<terminal os as m or l.  m for Mac , l for linux/ubuntu>
-INSTALL_BUNDLE=registry.tanzu.vmware.com/tanzu-cluster-essentials/cluster-essentials-bundle@sha256:2354688e46d4bb4060f74fca069513c9b42ffa17a0a6d5b0dbb81ed52242ea44
+INSTALL_BUNDLE=registry.tanzu.vmware.com/tanzu-cluster-essentials/cluster-essentials-bundle@sha256:2f538b69c866023b7d408cce6f0624c5662ee0703d8492e623b7fce10b6f840b
+               
 INSTALL_REGISTRY_HOSTNAME=registry.tanzu.vmware.com
-TAP_VERSION=1.4.4
-tanzu_ess_filename_m=tanzu-cluster-essentials-darwin-amd64-1.4.1.tgz
-tanzu_ess_filename_l=tanzu-cluster-essentials-linux-amd64-1.4.1.tgz
-tanzu_ess_url_m=https://network.tanzu.vmware.com/api/v2/products/tanzu-cluster-essentials/releases/1249982/product_files/1423996/download
-tanzu_ess_url_l=https://network.tanzu.vmware.com/api/v2/products/tanzu-cluster-essentials/releases/1249982/product_files/1423994/download
+TAP_VERSION=1.6.3
+K8_Version=1.26
+
+tanzu_ess_filename_m=tanzu-cluster-essentials-darwin-amd64-1.6.1.tgz
+tanzu_ess_filename_l=tanzu-cluster-essentials-linux-amd64-1.6.1.tgz
+tanzu_ess_url_m=https://network.tanzu.vmware.com/api/v2/products/tanzu-cluster-essentials/releases/1358494/product_files/1581689/download
+tanzu_ess_url_l=https://network.tanzu.vmware.com/api/v2/products/tanzu-cluster-essentials/releases/1358494/product_files/1581691/download
+
 DOCKERHUB_REGISTRY_URL=index.docker.io
 TAP_NAMESPACE="tap-install"
 tanzu_net_reg_user=<Provide tanzu net user>
@@ -134,8 +137,8 @@ Please follow below steps
 
 # Delete single tap cluster instance 
 1. Login to eks cluster(full) using kubeconfig where you want to delete tap.
-2. execute chmod +x /tap-scripts/tap-delete/tap-delete-single-cluster.sh
-3. execute ./tap-scripts/tap-delete/tap-delete-single-cluster.sh
+2. run chmod +x /tap-scripts/tap-delete/tap-delete-single-cluster.sh
+3. run cd ./tap-scripts/tap-delete ./tap-delete-single-cluster.sh
 
 ```
 ### Delete EKS cluster instance from eks cluster 
