@@ -14,5 +14,10 @@ echo "Step 1 => installing tanzu cli !!!"
 ./tanzu-cli-setup.sh
 echo "Step 2 => Setup TAP Full Cluster"
 ./tap-full.sh
-echo "Step 3 => Deploy sample app"
+
+echo "Step 3 => Create DNS records in Route53"
+./route53-record.sh
+
+echo "Step 4 => Deploy sample app"
 ./tap-demo-app-deploy.sh
+
